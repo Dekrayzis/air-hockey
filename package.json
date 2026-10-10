@@ -1,7 +1,7 @@
 {
   "name": "air-hockey",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Air hockey against a CPU in the browser: canvas physics on a fixed 60 Hz step, a puck that speeds up every two goals, and slow motion at game point.",
   "type": "module",
   "exports": {

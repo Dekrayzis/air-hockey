@@ -29,7 +29,7 @@ Move your mallet with the mouse, a finger, or the arrow keys / WASD once the tab
 The repo doubles as a package, which is how the portfolio site runs it. Install it from GitHub at a version tag:
 
 ```bash
-npm install github:Dekrayzis/air-hockey#v1.0.1
+npm install github:Dekrayzis/air-hockey#v1.0.2
 ```
 
 Then import the component and its stylesheet (the app needs Sass):
@@ -47,10 +47,20 @@ It ships as TypeScript source, so a Next.js app lists it in `transpilePackages` 
 
 | File | What it holds |
 | --- | --- |
-| `src/air-hockey/engine.ts` | The game: physics, CPU, effects, sound and the loop, outside React |
 | `src/air-hockey/AirHockey.tsx` | The component: scoreboard, start and game-over screens, sound switch |
+| `src/air-hockey/engine.ts` | The match: the game's state, kick-off to the winning goal, and how the parts fit together |
+| `src/air-hockey/physics.ts` | The puck, the rails and the mallet hits; reports what happened as events |
+| `src/air-hockey/cpu.ts` | The CPU's decisions and movement |
+| `src/air-hockey/input.ts` | Your mallet's controls: pointer, touch and keys |
+| `src/air-hockey/render.ts` | All the drawing, with the table cached off-screen |
+| `src/air-hockey/effects.ts` | Particles, sparks, confetti and screen shake |
+| `src/air-hockey/sound.ts` | The synthesised sound effects |
+| `src/air-hockey/loop.ts` | A fixed 60 Hz loop that pauses off screen and in hidden tabs |
+| `src/air-hockey/colour.ts` | Colour helpers, and reading the palette from the page |
+| `src/air-hockey/constants.ts` | Everything that tunes the game: the table, physics, the CPU, timings |
+| `src/air-hockey/types.ts` | The shapes the files share, including the game's state (World) |
 | `src/air-hockey/motion.ts` | The reduced-motion check |
-| `src/sections/_air-hockey.scss` | The component's styles |
+| `src/sections/_air-hockey.scss` | The component's styles and palette |
 | `src/abstracts/_index.scss` | The design tokens and helpers, with fallbacks |
 
 ## Run it

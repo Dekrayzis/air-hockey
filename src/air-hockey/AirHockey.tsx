@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { lessMotion } from "./motion";
-import { blankStats, createGame, KEY_DIRECTIONS, MAX_SCORE, type Side, type SideStats } from "./engine";
+import { KEY_DIRECTIONS, MAX_SCORE } from "./constants";
+import { blankStats, createGame } from "./engine";
+import type { ScreenPhase, Side, SideStats } from "./types";
 
 const outcome = (winner: Side | null) => (winner === "p" ? "You win" : "CPU wins");
 
@@ -17,7 +19,7 @@ export function AirHockey() {
   const game = useRef<ReturnType<typeof createGame> | null>(null);
   const [score, setScore] = useState<Record<Side, number>>({ p: 0, cpu: 0 });
   const [stats, setStats] = useState<Record<Side, SideStats>>({ p: blankStats(), cpu: blankStats() });
-  const [phase, setPhase] = useState<"idle" | "play" | "over">("idle");
+  const [phase, setPhase] = useState<ScreenPhase>("idle");
   const [winner, setWinner] = useState<Side | null>(null);
   const [sound, setSound] = useState(false);
 
