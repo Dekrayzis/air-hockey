@@ -1,3 +1,4 @@
+@use "sass:list";
 @use "sass:map";
 @use "sass:selector";
 
@@ -20,16 +21,11 @@ $colors: (
 $space: (1: 0.25rem, 2: 0.5rem, 3: 0.75rem, 4: 1rem, 5: 1.25rem, 6: 1.5rem);
 $radius: ("md": 16px, "lg": 22px, "pill": 999px);
 $type: ("caption": 0.6875rem, "body-sm": 0.8125rem, "h2": clamp(1.75rem, 3vw, 2.5rem));
-$breakpoint: ("lg": 1080px);
 
 @function color($key) { @return var(--c-#{$key}, #{map.get($colors, $key)}); }
 @function space($key) { @return var(--sp-#{$key}, #{map.get($space, $key)}); }
 @function radius($key) { @return var(--r-#{$key}, #{map.get($radius, $key)}); }
 @function fs($key) { @return var(--fs-#{$key}, #{map.get($type, $key)}); }
-
-@mixin down($bp) {
-  @media (max-width: (map.get($breakpoint, $bp) - 0.02px)) { @content; }
-}
 
 @mixin heading {
   font-size: fs("h2");
@@ -48,11 +44,21 @@ $breakpoint: ("lg": 1080px);
   color: color("accent");
 }
 
-@mixin focus-ring {
+@mixin focus-ring($offset: 3px) {
   &:focus-visible {
     outline: 2px solid color("accent");
-    outline-offset: 3px;
+    outline-offset: $offset;
   }
+}
+
+// A transition on the given properties, at the host page's speed and easing
+// when it sets them (--duration, --ease-out), or a sensible default.
+@function ease($props...) {
+  $list: ();
+  @each $p in $props {
+    $list: list.append($list, #{$p} var(--duration, 200ms) var(--ease-out, cubic-bezier(0.2, 0.8, 0.2, 1)), comma);
+  }
+  @return $list;
 }
 
 // The system's reduced-motion setting, or a host page's pause switch

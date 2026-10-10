@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { lessMotion } from "./motion";
-import { createGame, MAX_SCORE, type Side, type SideStats } from "./engine";
+import { blankStats, createGame, KEY_DIRECTIONS, MAX_SCORE, type Side, type SideStats } from "./engine";
 
-const blank: SideStats = { goals: 0, streak: 0, bestStreak: 0, topSpeed: 0, powerHits: 0 };
-const MOVE_KEYS = new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "KeyW", "KeyA", "KeyS", "KeyD"]);
+const outcome = (winner: Side | null) => (winner === "p" ? "You win" : "CPU wins");
 
 /**
  * Air hockey against the CPU, first to seven. Move your mallet with the
@@ -17,7 +16,7 @@ export function AirHockey() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const game = useRef<ReturnType<typeof createGame> | null>(null);
   const [score, setScore] = useState<Record<Side, number>>({ p: 0, cpu: 0 });
-  const [stats, setStats] = useState<Record<Side, SideStats>>({ p: blank, cpu: blank });
+  const [stats, setStats] = useState<Record<Side, SideStats>>({ p: blankStats(), cpu: blankStats() });
   const [phase, setPhase] = useState<"idle" | "play" | "over">("idle");
   const [winner, setWinner] = useState<Side | null>(null);
   const [sound, setSound] = useState(false);
@@ -54,13 +53,11 @@ export function AirHockey() {
     game.current?.setMuted(!next);
   };
 
-  const onKeyDown = (event: React.KeyboardEvent) => {
-    if (!MOVE_KEYS.has(event.code) || phase !== "play") return;
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (!(event.code in KEY_DIRECTIONS) || phase !== "play") return;
     event.preventDefault();
     game.current?.keyDown(event.code);
   };
-  const onKeyUp = (event: React.KeyboardEvent) => game.current?.keyUp(event.code);
-  const onBlur = () => MOVE_KEYS.forEach((k) => game.current?.keyUp(k));
 
   const panel = (side: Side) => {
     const s = stats[side];
@@ -99,56 +96,50 @@ export function AirHockey() {
     );
   };
 
+  const announcement =
+    phase === "over" ? `${outcome(winner)}, ${score.p} to ${score.cpu}.` : phase === "play" ? `You ${score.p}, CPU ${score.cpu}.` : "";
+
   return (
     <div className={`hockey is-${phase}`}>
-      {panel("p")}
+      <div className="hockey__layout">
+        {panel("p")}
 
-      <div className="hockey__arena">
-        <canvas
-          ref={canvas}
-          className="hockey__table"
-          tabIndex={0}
-          role="application"
-          aria-label={`Air hockey table. You ${score.p}, CPU ${score.cpu}. Move with the mouse, touch, or the arrow keys.`}
-          onKeyDown={onKeyDown}
-          onKeyUp={onKeyUp}
-          onBlur={onBlur}
-        />
+        <div className="hockey__arena">
+          <canvas
+            ref={canvas}
+            className="hockey__table"
+            tabIndex={0}
+            role="application"
+            aria-label={`Air hockey table. You ${score.p}, CPU ${score.cpu}. Move with the mouse, touch, or the arrow keys.`}
+            onKeyDown={onKeyDown}
+            onKeyUp={(event) => game.current?.keyUp(event.code)}
+            onBlur={() => game.current?.releaseKeys()}
+          />
 
-        {phase !== "play" && (
-          <div className="hockey__screen">
-            {phase === "over" ? (
-              <>
-                <p className="hockey__result">{winner === "p" ? "You win" : "CPU wins"}</p>
-                <p className="hockey__final">
-                  {score.p} – {score.cpu}
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="hockey__result">Air hockey</p>
-                <p className="hockey__final">First to {MAX_SCORE} wins</p>
-              </>
-            )}
-            <button type="button" className="hockey__start" onClick={start}>
-              {phase === "over" ? "Play again" : "Start match"}
+          {phase !== "play" && (
+            <div className="hockey__screen">
+              <p className="hockey__result">{phase === "over" ? outcome(winner) : "Air hockey"}</p>
+              <p className="hockey__final">{phase === "over" ? `${score.p} – ${score.cpu}` : `First to ${MAX_SCORE} wins`}</p>
+              <button type="button" className="hockey__start" onClick={start}>
+                {phase === "over" ? "Play again" : "Start match"}
+              </button>
+            </div>
+          )}
+
+          <div className="hockey__bar">
+            <p className="hockey__hint">Mouse, touch, or arrow keys · the puck speeds up every two goals</p>
+            <button type="button" className="hockey__sound" aria-pressed={sound} onClick={toggleSound}>
+              Sound {sound ? "on" : "off"}
             </button>
           </div>
-        )}
 
-        <div className="hockey__bar">
-          <p className="hockey__hint">Mouse, touch, or arrow keys · the puck speeds up every two goals</p>
-          <button type="button" className="hockey__sound" aria-pressed={sound} onClick={toggleSound}>
-            Sound {sound ? "on" : "off"}
-          </button>
+          <p className="sr-only" aria-live="polite">
+            {announcement}
+          </p>
         </div>
 
-        <p className="sr-only" aria-live="polite">
-          {phase === "over" ? `${winner === "p" ? "You win" : "CPU wins"}, ${score.p} to ${score.cpu}.` : phase === "play" ? `You ${score.p}, CPU ${score.cpu}.` : ""}
-        </p>
+        {panel("cpu")}
       </div>
-
-      {panel("cpu")}
     </div>
   );
 }

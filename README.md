@@ -29,7 +29,7 @@ Move your mallet with the mouse, a finger, or the arrow keys / WASD once the tab
 The repo doubles as a package, which is how the portfolio site runs it. Install it from GitHub at a version tag:
 
 ```bash
-npm install github:Dekrayzis/air-hockey#v1.0.0
+npm install github:Dekrayzis/air-hockey#v1.0.1
 ```
 
 Then import the component and its stylesheet (the app needs Sass):
@@ -51,7 +51,7 @@ It ships as TypeScript source, so a Next.js app lists it in `transpilePackages` 
 | `src/air-hockey/AirHockey.tsx` | The component: scoreboard, start and game-over screens, sound switch |
 | `src/air-hockey/motion.ts` | The reduced-motion check |
 | `src/sections/_air-hockey.scss` | The component's styles |
-| `src/abstracts/_index.scss` | The design tokens, with fallbacks |
+| `src/abstracts/_index.scss` | The design tokens and helpers, with fallbacks |
 
 ## Run it
 
