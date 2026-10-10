@@ -1,0 +1,35 @@
+{
+  "name": "air-hockey",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Air hockey against a CPU in the browser: canvas physics on a fixed 60 Hz step, a puck that speeds up every two goals, and slow motion at game point.",
+  "type": "module",
+  "exports": {
+    ".": "./src/air-hockey/AirHockey.tsx",
+    "./styles.scss": "./src/sections/_air-hockey.scss"
+  },
+  "files": [
+    "src/air-hockey",
+    "src/sections",
+    "src/abstracts"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sass": "1.105.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.4"
+  }
+}

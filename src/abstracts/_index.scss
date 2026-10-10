@@ -1,0 +1,63 @@
+@use "sass:map";
+@use "sass:selector";
+
+// The design tokens Air Hockey uses. Each reads a host page's custom property
+// when there is one (--c-accent, --sp-2 and so on, as on the portfolio site,
+// so it follows that page's accent) and falls back to the value here when it
+// runs on its own.
+
+$colors: (
+  "accent": #f2541b,
+  "accent-hover": #ff6a2f,
+  "accent-glow": rgba(242, 84, 27, 0.35),
+  "on-accent": #1a0c05,
+  "text": #f4f1ec,
+  "text-muted": #a3a2a0,
+  "text-subtle": #908f8c,
+  "line": rgba(255, 255, 255, 0.08),
+  "line-strong": rgba(255, 255, 255, 0.16),
+);
+$space: (1: 0.25rem, 2: 0.5rem, 3: 0.75rem, 4: 1rem, 5: 1.25rem, 6: 1.5rem);
+$radius: ("md": 16px, "lg": 22px, "pill": 999px);
+$type: ("caption": 0.6875rem, "body-sm": 0.8125rem, "h2": clamp(1.75rem, 3vw, 2.5rem));
+$breakpoint: ("lg": 1080px);
+
+@function color($key) { @return var(--c-#{$key}, #{map.get($colors, $key)}); }
+@function space($key) { @return var(--sp-#{$key}, #{map.get($space, $key)}); }
+@function radius($key) { @return var(--r-#{$key}, #{map.get($radius, $key)}); }
+@function fs($key) { @return var(--fs-#{$key}, #{map.get($type, $key)}); }
+
+@mixin down($bp) {
+  @media (max-width: (map.get($breakpoint, $bp) - 0.02px)) { @content; }
+}
+
+@mixin heading {
+  font-size: fs("h2");
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: color("text");
+  text-wrap: balance;
+}
+
+@mixin eyebrow {
+  font-size: fs("caption");
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color("accent");
+}
+
+@mixin focus-ring {
+  &:focus-visible {
+    outline: 2px solid color("accent");
+    outline-offset: 3px;
+  }
+}
+
+// The system's reduced-motion setting, or a host page's pause switch
+// (data-motion="paused" on <html>; see motion.ts).
+@mixin less-motion {
+  @media (prefers-reduced-motion: reduce) { @content; }
+  @at-root #{selector.nest(':root[data-motion="paused"]', &)} { @content; }
+}
